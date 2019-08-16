@@ -16,3 +16,4 @@ recvfilename:  the name of receiver file
 baudrate: 115200 9600 38400
 
 loopback: if it enabled the value is 1 ,or 0 if disabled
+
