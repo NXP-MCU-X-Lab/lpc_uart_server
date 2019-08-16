@@ -51,7 +51,7 @@ Environment required for download tool (LPC_firmware_download_tool/dfu-utils):
    
 
 ```
-root@ls1021atwr:/usr/bin/LPC_firmware_download_tool# ./download.sh
+root@ls1021atwr:/LPC_firmware_download_tool# ./download.sh
 ```
 
 Related log:
