@@ -40,13 +40,13 @@ config USB_SERIAL_LPC54XXX
 
 Environment required for download tool (LPC_firmware_download_tool/dfu-utils):
 
-* ARCH:  arm64
+* ARCH:  ARM
 
 * OS:    Linux
 
-1. Copy the download folder  LPC_firmware_download_tool/*  to a arm64 platform (such as LS1021ATWR)’s directory /usr/bin/. Connect a USB cable between arm64 platform USB host port and target LPC board’s USB upstream port.
+1. Copy the download folder  LPC_firmware_download_tool/YOUR PLATFORM/dfu-utils  to the directory  of  /usr/bin/. Connect a USB cable between ARM platform USB host port and target LPC board’s USB upstream port.
 
-2. On arm64 platform Linux console, goto /usr/bin/LPC_firmware_download_tool/, execute below shell script to download firmware to LPC board automatically through USB cable:
+2. On arm platform Linux console, goto the directory of LPC_firmware_download_tool/, execute below shell script to download firmware to LPC board automatically through USB cable:
 
    
 
@@ -87,28 +87,36 @@ Congratulations! Now the operation download firmware is successful. Host board (
 3. After firmware download complete, you will see upto 10 ttyUSBx device file shown in /dev/, which mean they are ready for use:
 
 ```
-root@ls1021atwr:/usr/bin/LPC_firmware_download_tool# ls /dev/ttyUSB
+root@ls1021atwr:/usr/bin/LPC_firmware_download_tool# ls /dev/ttyUSB*
 ```
 
 
 
-Note: There is a user space program which can be used (on arm64 platform) for function test and demo, please see folder user_space_test_program/ for details.
+Note: There is a user space program which can be used (on arm64 platform) for function test and demo,if you use 32bit platform,please recompile the source. please see folder user_space_test_program/ for details.
 
 
 
 ### Debug
 
-The device’s driver has added two files in sysfs to show the number of sending and receiving data (in bytes). The file named “send_bytes” means the data ttyUSBx device has sent since usb serial device got enumerated. Similarly, the file named “recv_bytes” means the data ttyUSBx device have received since usb serial device got enumerated.
+The device’s driver has added three attribute in sysfs to show the number of sending and receiving data (in bytes) and control the switch of loopback. The named “send_bytes” means the data ttyUSBx device has sent since usb serial device got enumerated. Similarly, the named “recv_bytes” means the data ttyUSBx device have received since usb serial device got enumerated.The "send_bytes" and "recv_bytes" only for read. The attribute of "loopback" can readed and writen , default value is 0(closed),if you want use loopback,execute command "echo 1 > loopback" ,otherwise "echo 0 > loopback".
 
 
 
 Here is an example:
 
 ```
-root@ls1043ardb:/sys/bus/usb/devices/1-1.4:1.0/ttyUSB8# cat send_bytes
-360855
-root@ls1043ardb:/sys/bus/usb/devices/1-1.4:1.0/ttyUSB8# cat recv_bytes
-360855
+root@ls1043ardb:/mnt# ./usbttytestm 1 10 hello.c  recvhello 115200 1
+
+root@ls1043ardb:/sys/class/tty/ttyUSB1/device# cat send_bytes
+23755
+root@ls1043ardb:/sys/class/tty/ttyUSB1/device# cat recv_bytes
+23755
+root@ls1043ardb:/sys/class/tty/ttyUSB1/device# cat loopback
+1
+root@ls1043ardb:/sys/class/tty/ttyUSB1/device# echo 0 > loopback
+root@ls1043ardb:/sys/class/tty/ttyUSB1/device# cat loopback
+0
+
 
 ```
 
