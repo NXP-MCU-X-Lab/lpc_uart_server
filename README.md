@@ -5,9 +5,9 @@ USB to uart sever based on lpc54018
 | folder                     | description                                   |
 | -------------------------- | --------------------------------------------- |
 | hardware                   | hardware schematic                            |
-| kernel driver              | kernel driver sources                         |
+| kernel driver              | Linux kernel driver source files              |
 | lpc_firmware_download_tool | Linux side DFU download tool and MCU firmware |
-| user_space_test_program    | user space test program and demo              |
+| user_space_test_program    | Linux user space program for test and demo    |
 | reference                  | other reference                               |
 | misc                       | other reference                               |
 
@@ -34,19 +34,19 @@ config USB_SERIAL_LPC54XXX
 
 ```
 
-4. On Linux kernel source folder, run ‘make menuconfig’ and select above item (“Linux kernel source”) to ‘*’, then compile the Linux kernel by executing ‘make’.
+4. On Linux kernel source folder, run ‘make menuconfig’ and select above item (“Linux kernel source”) to ‘*’ (as built-in), then compile the Linux kernel by executing ‘make’.
 
 ### Download MCU firmware
 
 Environment required for download tool (LPC_firmware_download_tool/dfu-utils):
 
-* CPU:       arm64
+* ARCH:  arm64
 
-* SYSTEM:    linux
+* OS:    Linux
 
 1. Copy the download folder  LPC_firmware_download_tool/*  to a arm64 platform (such as LS1021ATWR)’s directory /usr/bin/. Connect a USB cable between arm64 platform USB host port and target LPC board’s USB upstream port.
 
-2. Log on arm64 platform /usr/bin/LPC_firmware_download_tool/, execute below command to download LPC firmware:
+2. On arm64 platform Linux console, goto /usr/bin/LPC_firmware_download_tool/, execute below shell script to download firmware to LPC board automatically through USB cable:
 
    
 
@@ -54,7 +54,7 @@ Environment required for download tool (LPC_firmware_download_tool/dfu-utils):
 root@ls1021atwr:/usr/bin/LPC_firmware_download_tool# ./download.sh
 ```
 
-log:
+Related log:
 
 ```
 dfu-util 0.9
@@ -84,17 +84,15 @@ Done!
 Congratulations! Now the operation download firmware is successful. Host board (arm64) will begin re-enumerate LPC board as a special USB serial port device automatically.
 ```
 
-run：
+3. After firmware download complete, you will see upto 10 ttyUSBx device file shown in /dev/, which mean they are ready for use:
 
 ```
 root@ls1021atwr:/usr/bin/LPC_firmware_download_tool# ls /dev/ttyUSB
 ```
 
-If you can see above 10 ttyUSBx device file ,the firmware have been running correctly.
 
 
-
-Besides, we also have implement a test program which can be run on arm64 platform, please see folder user_space_test_program/ for details.
+Note: There is a user space program which can be used (on arm64 platform) for function test and demo, please see folder user_space_test_program/ for details.
 
 
 
