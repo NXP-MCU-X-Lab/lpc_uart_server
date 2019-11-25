@@ -115,14 +115,11 @@ void rt_application_init(void* parameter)
     SetPinMux(HW_GPIO0,  7, 1);
     
     
-    
     /* FC4  */
     SetPinMux(HW_GPIO3,  27, 3);
     SetPinMux(HW_GPIO3,  26, 3);
     SetPinMux(HW_GPIO3,  28, 3);
     SetPinMux(HW_GPIO3,  39, 3);
-    
-    
     
     /* FC5 */
     SetPinMux(HW_GPIO2,  13, 5);
