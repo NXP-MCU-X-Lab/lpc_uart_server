@@ -103,7 +103,21 @@ static int epsend(int argc, char** argv)
 }
 MSH_CMD_EXPORT(epsend, send ep data);
 
+static int test_uart_tx(int argc, char** argv)
+{
+    uint8_t chl = strtoul(argv[1], NULL, NULL);
+    bridge_uart_send(chl, "123456", 6);
+}
+MSH_CMD_EXPORT(test_uart_tx, test uart tx send);
 
+
+static int led(int argc, char** argv)
+{
+    uint8_t idx = strtoul(argv[1], NULL, NULL);
+    uint8_t val = strtoul(argv[2], NULL, NULL);
+    set_led(idx, val);
+}
+MSH_CMD_EXPORT(led, test led);
 
 #define CPU_USAGE_CALC_TICK    10
 #define CPU_USAGE_LOOP        100

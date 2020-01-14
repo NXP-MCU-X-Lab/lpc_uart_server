@@ -8,6 +8,8 @@
 #include "usbd.h"
 #include "ulog.h"
 
+
+void set_led(uint8_t idx, uint8_t val);
 void _setup_dma_tx_desc(uint8_t ch, DMA_ChlSetup_t *setup);
 void _setup_dma_rx_desc(uint8_t ch, DMA_ChlSetup_t *setup);
 
@@ -106,9 +108,11 @@ void serial_tx_thread_entey(void* parameter)
                     
                     bridge[i].tx_setup.sAddr = (uint32_t)bridge[i].tbuf;
                     bridge[i].tx_setup.transferCnt = len;
+                    set_led(i, 0);
                     DMA_SetupChl(&bridge[i].tx_setup);
                     DMA_SWTrigger(bridge[i].tx_setup.chl);
                     bridge[i].tx_sum += len;
+                    
                     rt_thread_delay(1);
                     //printf("down[%d] len:%d sum:%d\r\n", i, len, bridge[i].tx_sum );
                 }
@@ -154,6 +158,7 @@ void serial_rx_thread_entry(void* parameter)
             
             if(rx_dma_cnt)
             {
+                set_led(i, 0);
                 stat.total_in += rx_dma_cnt;
                 rt_ringbuffer_put(&bridge[i].rrb, bridge[i].rdma_buf, rx_dma_cnt);
                 bridge[i].rx_dma_sum += rx_dma_cnt;

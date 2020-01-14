@@ -21,6 +21,7 @@ void serial_tx_thread_entey(void* parameter);
 void usb_data_in_thread_entry(void* parameter);
 void usb_ctl_in_thread_entry(void* parameter);
 void serial_rx_thread_entry(void* parameter);
+void thread_led_entry(void* parameter);
 void uart_dma_test_thread_entry(void* parameter);
     
 void cpu_usage_init(void);
@@ -75,6 +76,9 @@ void init_thread_entry(void* parameter)
     tid = rt_thread_create("serial_rx", serial_rx_thread_entry, RT_NULL, 256, 12, 20);
     rt_thread_startup(tid);
 
+    tid = rt_thread_create("serial_rx", thread_led_entry, RT_NULL, 256, 19, 20);
+    rt_thread_startup(tid);
+    
 //    tid = rt_thread_create("test", uart_dma_test_thread_entry, RT_NULL, 512, 11, 20);
 //    rt_thread_startup(tid);
     
@@ -141,20 +145,17 @@ void rt_application_init(void* parameter)
     SetPinMux(HW_GPIO1,  21, 1);
     SetPinMux(HW_GPIO1,  20, 1);
     
-    
     /* FC8 */
     SetPinMux(HW_GPIO3,  16, 1);
     SetPinMux(HW_GPIO3,  17, 1);
     SetPinMux(HW_GPIO3,  4, 3);
     SetPinMux(HW_GPIO3,  5, 3);
     
-    
     /* FC9 */
     SetPinMux(HW_GPIO3,  3,  2);
     SetPinMux(HW_GPIO3,  2,  2);
     SetPinMux(HW_GPIO3,  30, 1);
     SetPinMux(HW_GPIO3,  31, 1);
-    
     
     rt_hw_uart_init("uart0");
     rt_console_set_device("uart0");
