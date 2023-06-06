@@ -10,7 +10,7 @@
     <aExt>*.s*; *.src; *.a*</aExt>
     <oExt>*.obj; *.o</oExt>
     <lExt>*.lib</lExt>
-    <tExt>*.txt; *.h; *.inc</tExt>
+    <tExt>*.txt; *.h; *.inc; *.md</tExt>
     <pExt>*.plm</pExt>
     <CppX>*.cpp</CppX>
     <nMigrate>0</nMigrate>
@@ -334,7 +334,8 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
-          <Key>DLGUARM</Key>
+          <Key>UL2CM3</Key>
+          <Name>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN3 -FF0LPC540xx_MT25QL128 -FS010000000 -FL01000000 -FF1LPC540xx_W25Q128JVFM -FS110000000 -FL11000000 -FF2LPC540xx_MX25L12835FM2I -FS210000000 -FL21000000 -FP0($$Device:LPC54018JET180$arm\LPC540xx_MT25QL128.FLM) -FP1($$Device:LPC54018JET180$arm\LPC540xx_W25Q128JVFM.FLM) -FP2($$Device:LPC54018JET180$arm\LPC540xx_MX25L12835FM2I.FLM))</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -821,7 +822,7 @@
 
   <Group>
     <GroupName>chusb\vsc</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

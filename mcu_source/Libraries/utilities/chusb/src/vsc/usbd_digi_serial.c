@@ -64,7 +64,9 @@
 #define DIGI_BAUD_153600			20
 #define DIGI_BAUD_230400			21
 #define DIGI_BAUD_460800			22
-
+#define DIGI_BAUD_921600            23
+#define DIGI_BAUD_1000000           24
+#define DIGI_BAUD_2000000           25
 
 static uint8_t digi_cdc_out_buf[512];
 extern rt_mutex_t usb_lock;
@@ -159,6 +161,36 @@ static uint32_t digi_data_ep_handler(uint8_t ep, uint8_t dir)
              //       LOG_I("CTRLOUT[%d] - DIGI_CMD_SET_BAUD_RATE baud:%d\r\n", chl, val);
                     switch(val)
                     {
+                        case DIGI_BAUD_50:
+                            UART_SetBaudRate(chl, 50);
+                            break;
+                        case DIGI_BAUD_75:
+                            UART_SetBaudRate(chl, 75);
+                            break;
+                        case DIGI_BAUD_110:
+                            UART_SetBaudRate(chl, 110);
+                            break;
+                        case DIGI_BAUD_150:
+                            UART_SetBaudRate(chl, 150);
+                            break;
+                        case DIGI_BAUD_200:
+                            UART_SetBaudRate(chl, 200);
+                            break;
+                        case DIGI_BAUD_300:
+                            UART_SetBaudRate(chl, 300);
+                            break;
+                        case DIGI_BAUD_600:
+                            UART_SetBaudRate(chl, 600);
+                            break;
+                        case DIGI_BAUD_1200:
+                            UART_SetBaudRate(chl, 1200);
+                            break;
+                        case DIGI_BAUD_1800:
+                            UART_SetBaudRate(chl, 1800);
+                            break;
+                        case DIGI_BAUD_2400:
+                            UART_SetBaudRate(chl, 2400);
+                            break;
                         case DIGI_BAUD_4800:
                             UART_SetBaudRate(chl, 4800);
                             break;
@@ -170,6 +202,24 @@ static uint32_t digi_data_ep_handler(uint8_t ep, uint8_t dir)
                             break;
                         case DIGI_BAUD_115200:
                             UART_SetBaudRate(chl, 115200);
+                            break;
+                        case DIGI_BAUD_153600:
+                            UART_SetBaudRate(chl, 153600);
+                            break;
+                        case DIGI_BAUD_230400:
+                            UART_SetBaudRate(chl, 230400);
+                            break;
+                        case DIGI_BAUD_460800:
+                            UART_SetBaudRate(chl, 460800);
+                            break;
+                        case DIGI_BAUD_921600:
+                            UART_SetBaudRate(chl, 921600);
+                            break;
+                        case DIGI_BAUD_1000000:
+                            UART_SetBaudRate(chl, 1000000);
+                            break;
+                        case DIGI_BAUD_2000000:
+                            UART_SetBaudRate(chl, 2000000);
                             break;
                         default:
                             LOG_E("un-supported baud rate");

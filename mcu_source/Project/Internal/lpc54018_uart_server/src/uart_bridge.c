@@ -83,7 +83,7 @@ void serial_tx_thread_entey(void* parameter)
 {
     int i;
     uint32_t len;
-    for(i=1; i<ARRAY_SIZE(bridge); i++)
+    for(i=0; i<ARRAY_SIZE(bridge); i++)
     {
         uart_bridge_init(i, &bridge[i]);
     }
@@ -96,7 +96,7 @@ void serial_tx_thread_entey(void* parameter)
     {
         rt_sem_take(utx_dma_complete, 1);
         
-        for(i=1; i< ARRAY_SIZE(bridge); i++)
+        for(i=0; i< ARRAY_SIZE(bridge); i++)
         {
             if(bridge[i].tx_idle)
             {
@@ -140,7 +140,7 @@ void serial_rx_thread_entry(void* parameter)
     
     while(1)
     {
-        for(i=1; i< ARRAY_SIZE(bridge); i++)
+        for(i=0; i< ARRAY_SIZE(bridge); i++)
         {
             timeout = 0;
             while(DMA0->COMMON[0].BUSY & (1 << bridge[i].rx_setup.chl))
@@ -231,7 +231,7 @@ void usb_data_in_thread_entry(void* parameter)
         min_free_chl = 1;
             
         /* find the buf is most likely full */
-        for(i=1; i< ARRAY_SIZE(bridge); i++)
+        for(i=0; i< ARRAY_SIZE(bridge); i++)
         {
             free = bridge_uart_rx_get_free(i);
             if(free < min_free)
@@ -306,7 +306,7 @@ void DMA0_IRQHandler(void)
         bridge[9].tx_idle = 1;
     }
     
-    for(i=1; i<ARRAY_SIZE(bridge); i++)
+    for(i=0; i<ARRAY_SIZE(bridge); i++)
     {
         if(INTA & (1 << (i*2 + 1)))
         {

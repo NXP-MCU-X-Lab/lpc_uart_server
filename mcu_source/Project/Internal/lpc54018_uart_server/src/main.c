@@ -56,7 +56,7 @@ void init_thread_entry(void* parameter)
     DMA_Init();
     
     /* loopback */
-    for(i=1; i<10; i++)
+    for(i=0; i<10; i++)
     {
         UART_Init(i, 115200);
         UART_SetDMAMode(i, kUART_DMARx, true);
@@ -157,8 +157,10 @@ void rt_application_init(void* parameter)
     SetPinMux(HW_GPIO3,  30, 1);
     SetPinMux(HW_GPIO3,  31, 1);
     
+#if USING_UART0_AS_MSH
     rt_hw_uart_init("uart0");
     rt_console_set_device("uart0");
+#endif
 
     rt_components_board_init();
     rt_components_init();
