@@ -52,7 +52,7 @@
 
 /* ids */
 #define LPC_VENDOR_ID			0x1FC9
-#define LPC_10_ID			    0xEA60
+#define LPC_J2_ID			0xEA60
 
 /* commands
  * "INB": can be used on the in-band endpoint
@@ -60,14 +60,14 @@
  */
 #define LPC_CMD_SET_BAUD_RATE			       0	/* INB, OOB */
 #define LPC_CMD_SET_WORD_SIZE			       1	/* INB, OOB */
-#define LPC_CMD_SET_PARITY			           2	/* INB, OOB */
+#define LPC_CMD_SET_PARITY			       2	/* INB, OOB */
 #define LPC_CMD_SET_STOP_BITS			       3	/* INB, OOB */
-#define LPC_CMD_SET_INPUT_FLOW_CONTROL		   4	/* INB, OOB */
-#define LPC_CMD_SET_OUTPUT_FLOW_CONTROL	       5	/* INB, OOB */
+#define LPC_CMD_SET_INPUT_FLOW_CONTROL		       4	/* INB, OOB */
+#define LPC_CMD_SET_OUTPUT_FLOW_CONTROL	               5	/* INB, OOB */
 #define LPC_CMD_SET_DTR_SIGNAL			       6	/* INB, OOB */
 #define LPC_CMD_SET_RTS_SIGNAL			       7	/* INB, OOB */
 #define LPC_CMD_READ_INPUT_SIGNALS		       8	/*      OOB */
-#define LPC_CMD_IFLUSH_FIFO			           9	/*      OOB */
+#define LPC_CMD_IFLUSH_FIFO			       9	/*      OOB */
 #define LPC_CMD_RECEIVE_ENABLE			       10	/* INB, OOB */
 #define LPC_CMD_BREAK_CONTROL			       11	/* INB, OOB */
 #define LPC_CMD_LOCAL_LOOPBACK			       12	/* INB, OOB */
@@ -76,15 +76,15 @@
 #define LPC_CMD_WRITE_UART_REGISTER		       15	/* INB, OOB */
 #define LPC_CMD_AND_UART_REGISTER		       16	/* INB, OOB */
 #define LPC_CMD_OR_UART_REGISTER		       17	/* INB, OOB */
-#define LPC_CMD_SEND_DATA			           18	/* INB      */
+#define LPC_CMD_SEND_DATA			       18	/* INB      */
 #define LPC_CMD_RECEIVE_DATA			       19	/* INB      */
-#define LPC_CMD_RECEIVE_DISABLE		           20	/* INB      */
+#define LPC_CMD_RECEIVE_DISABLE		               20	/* INB      */
 #define LPC_CMD_GET_PORT_TYPE			       21	/*      OOB */
-#define LPC_CMD_TRANSMIT_FULL                  22   /*      OOB */
+#define LPC_CMD_TRANSMIT_FULL                  	       22   /*      OOB */
 
 /* baud rates */
-#define LPC_BAUD_50				    0
-#define LPC_BAUD_75				    1
+#define LPC_BAUD_50				0
+#define LPC_BAUD_75				1
 #define LPC_BAUD_110				2
 #define LPC_BAUD_150				3
 #define LPC_BAUD_200				4
@@ -102,10 +102,14 @@
 #define LPC_BAUD_38400				16
 #define LPC_BAUD_57600				17
 #define LPC_BAUD_76800				18
-#define LPC_BAUD_115200			    19
-#define LPC_BAUD_153600			    20
-#define LPC_BAUD_230400			    21
-#define LPC_BAUD_460800			    22
+#define LPC_BAUD_115200			    	19
+#define LPC_BAUD_153600			    	20
+#define LPC_BAUD_230400			    	21
+#define LPC_BAUD_460800			    	22
+#define LPC_BAUD_921600			    	23
+#define LPC_BAUD_1000000		    	24
+#define LPC_BAUD_2000000		        25
+
 
 /* arguments */
 #define LPC_WORD_SIZE_5			0
@@ -123,12 +127,12 @@
 #define LPC_STOP_BITS_2			1
 
 #define LPC_INPUT_FLOW_CONTROL_XON_XOFF	    1
-#define LPC_INPUT_FLOW_CONTROL_RTS		    2
-#define LPC_INPUT_FLOW_CONTROL_DTR		    4
+#define LPC_INPUT_FLOW_CONTROL_RTS	    2
+#define LPC_INPUT_FLOW_CONTROL_DTR	    4
 
-#define LPC_OUTPUT_FLOW_CONTROL_XON_XOFF	1
-#define LPC_OUTPUT_FLOW_CONTROL_CTS		    2
-#define LPC_OUTPUT_FLOW_CONTROL_DSR		    4
+#define LPC_OUTPUT_FLOW_CONTROL_XON_XOFF       	1
+#define LPC_OUTPUT_FLOW_CONTROL_CTS	        2
+#define LPC_OUTPUT_FLOW_CONTROL_DSR	        4
 
 #define LPC_DTR_INACTIVE			    0
 #define LPC_DTR_ACTIVE				    1
@@ -247,7 +251,7 @@ static int  lpc_calc_num_ports(struct usb_serial *serial,struct usb_serial_endpo
 
 
 static const struct usb_device_id id_table_10[] = {
-    { USB_DEVICE(LPC_VENDOR_ID, LPC_10_ID) },
+    { USB_DEVICE(LPC_VENDOR_ID, LPC_J2_ID) },
     { }						/* Terminating entry */
 };
 MODULE_DEVICE_TABLE(usb, id_table_10);
@@ -843,6 +847,10 @@ static void lpc_set_termios(struct tty_struct *tty,
         case 115200: arg = LPC_BAUD_115200; break;
         case 230400: arg = LPC_BAUD_230400; break;
         case 460800: arg = LPC_BAUD_460800; break;
+	case 921600:  arg = LPC_BAUD_921600; break;
+        case 1000000: arg = LPC_BAUD_1000000; break;
+        case 2000000: arg = LPC_BAUD_2000000; break;
+
         default:
             arg = LPC_BAUD_9600;
             baud = 9600;
