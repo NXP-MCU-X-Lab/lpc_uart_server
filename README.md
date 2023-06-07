@@ -34,7 +34,7 @@ config USB_SERIAL_LPC54XXX
 
 ```
 
-4. On Linux kernel source folder, run ‘make menuconfig’ and select above item (“Linux kernel source”) to ‘*’ (as built-in), then compile the Linux kernel by executing ‘make’.
+4. On Linux kernel source folder, run ‘make menuconfig’ and select above item (“Linux kernel source”) to ‘*’ (as built-in), then compile the Linux kernel by executing ‘make’ or 'make -j$(nproc)'.
 
 ### Download MCU firmware
 
@@ -44,14 +44,14 @@ Environment required for download tool (LPC_firmware_download_tool/dfu-utils):
 
 * OS:    Linux
 
-1. Copy the download folder  LPC_firmware_download_tool/YOUR PLATFORM/dfu-utils  to the directory  of  /usr/bin/. Connect a USB cable between ARM platform USB host port and target LPC board’s USB upstream port.
+1. Copy the download folder  LPC_firmware_download_tool/YOUR PLATFORM/dfu-utils  to the directory  of  /usr/bin/. Connect a USB cable between ARM platform USB host port and target LPC board’s USB upstream port.   LPC54xx evk board need DFU mode.Currently, the MCU bin file only supports the J2, which is the High-Speed USB port.
 
 2. On arm platform Linux console, goto the directory of LPC_firmware_download_tool/, execute below shell script to download firmware to LPC board automatically through USB cable:
 
    
 
 ```
-root@ls1021atwr:/LPC_firmware_download_tool# ./download.sh
+root@ls1012afrwy:/LPC_firmware_download_tool# ./download.sh
 ```
 
 Related log:
@@ -81,7 +81,6 @@ Download done.
 state(8) = dfuMANIFEST-WAIT-RESET, status(0) = No error condition is present
 Done!
 ************************************************************************************************
-Congratulations! Now the operation download firmware is successful. Host board (arm64) will begin re-enumerate LPC board as a special USB serial port device automatically.
 ```
 
 3. After firmware download complete, you will see upto 10 ttyUSBx device file shown in /dev/, which mean they are ready for use:
@@ -169,3 +168,34 @@ UART pinmux table:
 | UART9_CTS                | P3_30 | 1        |
 | UART9_RTS                | P3_31 | 1        |
 
+
+
+### LS1012ardb or LS1012afrwy test guide
+* 1 Program the IMG file
+```
+  wget wget https://www.nxp.com/lgfiles/sdk/lsdk2108/firmware_ls1012afrwy_qspiboot.img
+  wget wget https://www.nxp.com/lgfiles/sdk/lsdk2108/firmware_ls1012ardb_qspiboot.img
+  flash the img to QSPI flash with codewarrior jtag.
+```
+* 2 Create an SD card image
+  Host linux:
+```
+  wget https://www.nxp.com/lgfiles/sdk/lsdk2108/flex-installer && chmod +x flex-installer && sudo mv flex-installer /usr/bin
+  flex-installer -i auto -m ls1012ardb /dev/sdX
+  or
+  flex-installer -i auto -m ls1012afrwy /dev/sdX
+  where X is a letter such as a, b, c. Make sure to choose the correct device name, because data on this device will be replaced.
+```
+* 3 Compile the kernel and copy it to SD
+  follow the instructions above to generate the 'Image' and 'Image.gz' files, and then copy these two files to the '/dev/sdx1' directory on the SD card, i.e., the '/boot' partition.
+* 4 UART stress testing
+  Short-circuit the D0 and D1 pins on J13 of the LPC54S108 board using a DuPont wire, which corresponds to the ttyUSB4 interface. 
+  Select any small file, such as 'Image.gz' (4.2M).
+  Setting the baud rate to 2M using the command:
+```
+  stty -F /ttyUSB4 2000000 raw -echo
+  cat /ttyUSB4 > Image_r.gz &
+  echo Image.gz > /dev/ttyUSB4 &
+```
+  Wait until the file sizes match, then run the 'ls -al Image*' command. 
+  If the MD5 checksums of the two files are the same, it indicates that the 2M baud rate is working properly.
