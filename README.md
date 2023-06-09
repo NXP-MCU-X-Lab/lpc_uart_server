@@ -1,6 +1,6 @@
 # lpc_uart_server
 
-USB to uart sever based on lpc54018
+USB to uart sever based on lpc54018 and lpc54608
 
 | folder                     | description                                   |
 | -------------------------- | --------------------------------------------- |
@@ -10,6 +10,7 @@ USB to uart sever based on lpc54018
 | user_space_test_program    | Linux user space program for test and demo    |
 | reference                  | other reference                               |
 | misc                       | other reference                               |
+| mcu_source                 | lpc54xxx source project                       |
 
 
 
@@ -17,12 +18,12 @@ USB to uart sever based on lpc54018
 
 ### Add USB kernel driver, compile kernel
 
-1. Copy file kernel_driver/lpc54xxx.c file to Linux kernel source directory drivers/usb/serial/
-2. Add below code to Linux kernel source file drivers/usb/serial/Makefile:
+1. Copy file *kernel_driver/lpc54xxx.c* file to Linux kernel source directory *drivers/usb/serial/*
+2. Add below code to Linux kernel source file *drivers/usb/serial/Makefile*:
 
 `obj-$(CONFIG_USB_SERIAL_LPC54XXX)   += lpc54xxx.o`
 
-3. Add below code to Linux kernel source file drivers/usb/serial/Kconfig:
+3. Add below code to Linux kernel source file *drivers/usb/serial/Kconfig*:
 
 ```
 config USB_SERIAL_LPC54XXX
@@ -38,15 +39,25 @@ config USB_SERIAL_LPC54XXX
 
 ### Download MCU firmware
 
-Environment required for download tool (LPC_firmware_download_tool/dfu-utils):
+Environment required for download tool (*LPC_firmware_download_tool/dfu-utils*):
 
 * ARCH:  ARM
 
 * OS:    Linux
 
-1. Copy the download folder  LPC_firmware_download_tool/YOUR PLATFORM/dfu-utils  to the directory  of  /usr/bin/. Connect a USB cable between ARM platform USB host port and target LPC board’s USB upstream port.   LPC54xx evk board need DFU mode.Currently, the MCU bin file only supports the J2, which is the High-Speed USB port.
+* MCU Boards Support: 
 
-2. On arm platform Linux console, goto the directory of LPC_firmware_download_tool/, execute below shell script to download firmware to LPC board automatically through USB cable:
+  (1) LPC54018 multi-tty demo board
+
+  (2) LPC54S018-EVK
+
+  (3) LPC546xx-EVK(LPC54608, LPC54618 and LPC54628 are compatible on this EVK)
+
+1. Copy the download folder *LPC_firmware_download_tool/YOUR PLATFORM/dfu-utils* to the directory of */usr/bin/*. Connect a USB cable between ARM platform USB host port and target LPC54018 multi-tty demo board’s USB upstream port. The firmware runs on MCU USB1 Port;
+
+   **Note: if LPC54S018-EVK or LPC546xx-EVK is used instead of the multi-tty demo board, user should force MCU to enter USB DFU mode manually. Please refer the last section for details.**
+
+2. On arm platform Linux console, goto the directory of *LPC_firmware_download_tool/*, execute below shell script to download firmware to LPC board automatically through USB cable:
 
    
 
@@ -83,7 +94,7 @@ Done!
 ************************************************************************************************
 ```
 
-3. After firmware download complete, you will see upto 10 ttyUSBx device file shown in /dev/, which mean they are ready for use:
+3. After firmware download complete, you will see upto 10 ttyUSBx device file shown in */dev/*, which mean they are ready for use:
 
 ```
 root@ls1021atwr:/usr/bin/LPC_firmware_download_tool# ls /dev/ttyUSB*
@@ -91,13 +102,13 @@ root@ls1021atwr:/usr/bin/LPC_firmware_download_tool# ls /dev/ttyUSB*
 
 
 
-Note: There is a user space program which can be used (on arm64 platform) for function test and demo,if you use 32bit platform,please recompile the source. please see folder user_space_test_program/ for details.
+Note: There is a user space program which can be used (on arm64 platform) for function test and demo, if you use 32bit platform, please recompile the source. please see folder *user_space_test_program/* for details.
 
 
 
 ### Debug
 
-The device’s driver has added three attribute in sysfs to show the number of sending and receiving data (in bytes) and control the switch of loopback. The named “send_bytes” means the data ttyUSBx device has sent since usb serial device got enumerated. Similarly, the named “recv_bytes” means the data ttyUSBx device have received since usb serial device got enumerated.The "send_bytes" and "recv_bytes" only for read. The attribute of "loopback" can readed and writen , default value is 0(closed),if you want use loopback,execute command "echo 1 > loopback" ,otherwise "echo 0 > loopback".
+The device’s driver has added three attribute in sysfs to show the number of sending and receiving data (in bytes) and control the switch of loopback. The named “send_bytes” means the data ttyUSBx device has sent since usb serial device got enumerated. Similarly, the named “recv_bytes” means the data ttyUSBx device have received since usb serial device got enumerated.The "send_bytes" and "recv_bytes" only for read. The attribute of "loopback" can readed and writen , default value is 0(closed), if you want use loopback,execute command "echo 1 > loopback" ,otherwise "echo 0 > loopback".
 
 
 
@@ -121,9 +132,7 @@ root@ls1043ardb:/sys/class/tty/ttyUSB1/device# cat loopback
 
 
 
-### MCU side
-
-UART pinmux table:
+### MCU Available UART Ports
 
 | UART PORT                | PIN   | pin  mux |
 | ------------------------ | ----- | -------- |
@@ -171,14 +180,18 @@ UART pinmux table:
 
 
 ### LS1012ardb or LS1012afrwy test guide
+
 * 1 Program the IMG file
+
 ```
   wget wget https://www.nxp.com/lgfiles/sdk/lsdk2108/firmware_ls1012afrwy_qspiboot.img
   wget wget https://www.nxp.com/lgfiles/sdk/lsdk2108/firmware_ls1012ardb_qspiboot.img
   flash the img to QSPI flash with codewarrior jtag.
 ```
+
 * 2 Create an SD card image
   Host linux:
+
 ```
   wget https://www.nxp.com/lgfiles/sdk/lsdk2108/flex-installer && chmod +x flex-installer && sudo mv flex-installer /usr/bin
   flex-installer -i auto -m ls1012ardb /dev/sdX
@@ -186,16 +199,44 @@ UART pinmux table:
   flex-installer -i auto -m ls1012afrwy /dev/sdX
   where X is a letter such as a, b, c. Make sure to choose the correct device name, because data on this device will be replaced.
 ```
+
 * 3 Compile the kernel and copy it to SD
   follow the instructions above to generate the 'Image' and 'Image.gz' files, and then copy these two files to the '/dev/sdx1' directory on the SD card, i.e., the '/boot' partition.
 * 4 UART stress testing
-  Short-circuit the D0 and D1 pins on J13 of the LPC54S108 board using a DuPont wire, which corresponds to the ttyUSB4 interface. 
+  Short Pin13(P3_27, FC4_TXD) and Pin15(P3_26, FC4_RXD) on J13 of the LPC54S108-evk board with a jumper wire as an external loopback. Pin13 and Pin15 of J13 correspond to the ttyUSB4 interface.
   Select any small file, such as 'Image.gz' (4.2M).
   Setting the baud rate to 2M using the command:
+
 ```
   stty -F /ttyUSB4 2000000 raw -echo
   cat /ttyUSB4 > Image_r.gz &
   echo Image.gz > /dev/ttyUSB4 &
 ```
+
   Wait until the file sizes match, then run the 'ls -al Image*' command. 
   If the MD5 checksums of the two files are the same, it indicates that the 2M baud rate is working properly.
+
+### LPC54S108-EVK or LPC546xx-EVK setup guide
+
+If user has LPC54S018-EVK or LPC546xx-EVK on hand, the binary image can also work normally on it. But because of evk board's resource limitation not all of 10 UART ports are reserved on board, user can take below table of available UART ports on EVK as reference to debug. Except ttyUSB0 ports, user should use a USB2TTL tool to connect specified MCU UART pins to Putty, Tera Term or some else PC serial ports tool. 
+
+|               UART Pins on EVK                | ttyUSB Ports |
+| :-------------------------------------------: | :----------: |
+| J13 Pin13(P3_27, TXD) / J13 Pin15(P3_26, RXD) |   ttyUSB4    |
+|  J9 Pin12(P4_3, TXD) / J9 Pin10(P4_2, RXD)*   |   ttyUSB6    |
+| J9 Pin18(P2_20, TXD)* / J9 Pin20(P2_19, RXD)  |   ttyUSB7    |
+| J13 Pin18(P3_17, TXD) / J12 Pin3(P3_16, RXD)  |   ttyUSB8    |
+|   J9 Pin8(P3_3, TXD) / J13 Pin11(P3_2, RXD)   |   ttyUSB9    |
+|    J8 on board USB debugger(P0_30, P0_29)     |   ttyUSB0    |
+
+** Before testing ttyUSB6 and ttyUSB7, the resistor R87 should be removed to disconnect P4_3 and P2_20 on EVK
+
+Here please follow below steps to make EVK board on your hand to work:
+
+1. Because USB1 high speed port is used as the USB device in MCU firmware, user should connect J2 with a USB cable to your Linux host and MCU is therefore powered on by the USB host VBUS, no other external power required;
+
+2. Either LPC54S018-EVK or LPC546xx-EVK, user should force MCU to enter USB1 DFU mode firstly to be ready for firmware download by firstly pressing the key SW2(ISP-2) and SW3(ISP-1) in the same time(USB1 DFU mode -> ISP2:1:0 = 0:0:1) , secondly press-release SW1(MCU RESET) and the last step releasing SW2 and SW3. Now MCU should be at USB1 DFU mode;
+
+3. Refer the above section "Download MCU firmware" to use dfu-util tool to program the firmware into MCU. 
+
+   **Be noted that if you are using LPC54S018-EVK, the firmware is downloaded into MCU SRAM because LPC54018 has no internal flash, so during the test you should not press the Reset pin or not power down the MCU, otherwise the firmware will lost and you should start over again the above 3 steps, but if you are using LPC546xx-EVK, the firmware is downloaded into MCU flash, don't worry about that**. 
